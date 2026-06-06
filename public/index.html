@@ -53,7 +53,6 @@
       z-index: 1;
     }
 
-    /* Badge Server Id dengan Indikator Kedip Hijau */
     .server-badge {
       position: absolute;
       top: 20px;
@@ -81,18 +80,9 @@
     }
 
     @keyframes pulse-green {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
-      }
-      70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 6px rgba(46, 204, 113, 0);
-      }
-      100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
-      }
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(46, 204, 113, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
     }
 
     .login-container::before {
@@ -127,7 +117,6 @@
       font-size: 1.5rem;
     }
 
-    /* Info Bar Keren Kedip */
     .info-bar {
       background: #fff5f8;
       border: 2px dashed var(--danger);
@@ -264,6 +253,18 @@
       cursor: not-allowed;
     }
 
+    .reload-btn {
+      background: #f8f9fa;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      margin-top: 12px;
+    }
+
+    .reload-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
     .spinner {
       display: none;
       width: 24px;
@@ -297,6 +298,40 @@
       background-color: #f0fff4;
       color: #28a745;
       border: 1px solid #c3e6cb;
+    }
+
+    .time-alert {
+      background: #fff3cd;
+      border-left: 6px solid #ffc107;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      text-align: left;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .time-alert h4 {
+      color: #856404;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-detail {
+      font-size: 0.85rem;
+      color: #856404;
+      margin: 8px 0;
+      background: #fff8e7;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .time-warning-text {
+      font-weight: 500;
+      margin: 10px 0;
+      color: #b16100;
     }
 
     .footer {
@@ -367,7 +402,6 @@
       text-decoration: underline;
     }
     
-    /* Toast Notification */
     #toast {
       visibility: hidden;
       min-width: 200px;
@@ -395,11 +429,25 @@
   <div class="login-container">
     <div class="server-badge">
       <span class="dot"></span>
-      Id Server : YS 2
+      Id Server : yorSINE 2
     </div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lambang_Kabupaten_Ngawi_%28svg%29.svg/500px-Lambang_Kabupaten_Ngawi_%28svg%29.svg.png" alt="Logo Kabupaten" class="logo">
     <h2>Presensi Pegawai</h2>
     <p class="subtitle">Korwil Kecamatan Sine</p>
+
+    <div id="timeAlertContainer" style="display: none;" class="time-alert">
+      <h4><i class="fas fa-clock"></i> PERINGATAN WAKTU TIDAK SINKRON</h4>
+      <div id="timeDetails" class="time-detail">Memeriksa waktu server...</div>
+      <div class="time-warning-text">
+        <i class="fas fa-exclamation-triangle"></i> <strong>Deteksi manipulasi / perubahan jam perangkat!</strong><br>
+        Waktu perangkat Anda berbeda lebih dari 1 menit dari waktu server GMT+7.<br>
+        Harap kembalikan jam perangkat ke waktu yang sebenarnya.
+      </div>
+      <button id="reloadTimeBtn" class="btn reload-btn" style="width: 100%;">
+        <i class="fas fa-sync-alt"></i> Reload & Cek Ulang Waktu
+      </button>
+      <p style="font-size:0.7rem; margin-top:8px; color:#b16100;">* Selisih ≤ 1 menit dianggap aman. Setelah jam dikembalikan, klik Reload.</p>
+    </div>
 
     <form id="loginForm">
       <div class="form-group">
@@ -424,12 +472,11 @@
       <a href="#" id="forgotPasswordLink">Lupa Password?</a>
     </form>
 
-    <!-- Info E-Monitoring & Alamat Baru -->
     <div class="info-bar">
       <div class="info-title"><i class="fas fa-bullhorn"></i> E-MONITORING & PENGAJUAN PSW</div>
       <p style="font-size: 0.75rem; color: #555;">Silahkan Salin / Ketik Link dibawah ini untuk melakukan monitoring dan pengajuan PSW:</p>
       <div class="info-link-container">
-        <div class="info-url" id="newUrl">www.korwilsine.web.id</div>
+        <div class="info-url" id="newUrl">yoriapp.site/e-presensi</div>
         <button class="copy-btn" id="copyUrlBtn" title="Salin Link">
           <i class="fas fa-copy"></i>
         </button>
@@ -439,7 +486,6 @@
     <div class="footer">© 2026 Sistem Presensi ASN Korwil Sine</div>
   </div>
 
-  <!-- Reset Password Modal -->
   <div id="forgotPasswordModal" class="modal">
     <div class="modal-content">
       <span class="close-button">&times;</span>
@@ -469,6 +515,7 @@
   <div id="toast">Tautan berhasil disalin!</div>
 
   <script>
+    // ---------- KODE ASLI (tidak diubah) ----------
     const PROXY_URL = '/api/proxy';
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
@@ -488,7 +535,6 @@
     const resetBtnText = document.getElementById('resetBtnText');
     const resetMessageEl = document.getElementById('resetMessage');
 
-    // Fitur Salin Link
     document.getElementById('copyUrlBtn').addEventListener('click', function() {
       const textToCopy = document.getElementById('newUrl').innerText;
       const dummy = document.createElement("textarea");
@@ -497,19 +543,176 @@
       dummy.select();
       document.execCommand("copy");
       document.body.removeChild(dummy);
-      
       const toast = document.getElementById("toast");
       toast.className = "show";
       setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
     });
 
-    window.onload = () => {
-      usernameInput.focus();
-      localStorage.removeItem('sessionId');
-    };
+    // ---------- FITUR DETEKSI WAKTU DENGAN TOLERANSI 1 MENIT (60 detik) ----------
+    const timeAlertContainer = document.getElementById('timeAlertContainer');
+    const timeDetailsEl = document.getElementById('timeDetails');
+    const reloadTimeBtn = document.getElementById('reloadTimeBtn');
+    
+    let isTimeErrorActive = false;
+    let timeCheckInterval = null;
+    const TIME_TOLERANCE_MS = 60000; // 1 menit = 60000 ms
 
-    loginForm.addEventListener('submit', async (e) => {
+    function setLoginFormEnabled(enabled) {
+      usernameInput.disabled = !enabled;
+      passwordInput.disabled = !enabled;
+      loginBtn.disabled = !enabled;
+      if (!enabled) {
+        loginBtn.style.opacity = '0.6';
+        loginBtn.style.cursor = 'not-allowed';
+        forgotPasswordLink.style.pointerEvents = 'none';
+        forgotPasswordLink.style.opacity = '0.5';
+      } else {
+        loginBtn.style.opacity = '1';
+        loginBtn.style.cursor = 'pointer';
+        forgotPasswordLink.style.pointerEvents = 'auto';
+        forgotPasswordLink.style.opacity = '1';
+      }
+    }
+
+    function showTimeError(serverTimeObj, localTimeObj, differenceSec) {
+      isTimeErrorActive = true;
+      timeAlertContainer.style.display = 'block';
+      const serverFormatted = serverTimeObj.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+      const localFormatted = localTimeObj.toLocaleString('id-ID', { hour12: false });
+      timeDetailsEl.innerHTML = `<i class="fas fa-server"></i> <strong>Waktu Server (GMT+7):</strong> ${serverFormatted}<br>
+                                 <i class="fas fa-laptop"></i> <strong>Waktu Perangkat:</strong> ${localFormatted}<br>
+                                 <strong>Selisih:</strong> ${Math.abs(differenceSec).toFixed(1)} detik (lebih dari 1 menit)`;
+      setLoginFormEnabled(false);
+    }
+
+    function hideTimeError() {
+      if (!isTimeErrorActive) return;
+      isTimeErrorActive = false;
+      timeAlertContainer.style.display = 'none';
+      setLoginFormEnabled(true);
+    }
+
+    // Mendapatkan waktu server dengan multiple requests untuk akurasi
+    async function getAccurateServerTime() {
+      const startTime = Date.now();
+      const request1 = fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      const res1 = await request1;
+      const data1 = await res1.json();
+      const time1 = new Date(data1.datetime);
+      const endTime1 = Date.now();
+      const latency1 = (endTime1 - startTime) / 2;
+      
+      const startTime2 = Date.now();
+      const request2 = fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      const res2 = await request2;
+      const data2 = await res2.json();
+      const time2 = new Date(data2.datetime);
+      const endTime2 = Date.now();
+      const latency2 = (endTime2 - startTime2) / 2;
+      
+      const correctedTime1 = new Date(time1.getTime() - latency1);
+      const correctedTime2 = new Date(time2.getTime() - latency2);
+      
+      if (Math.abs(correctedTime1.getTime() - correctedTime2.getTime()) > 1000) {
+        return correctedTime1;
+      }
+      return new Date((correctedTime1.getTime() + correctedTime2.getTime()) / 2);
+    }
+
+    async function fetchServerTimeAlternative() {
+      const response = await fetch('https://1.1.1.1/cdn-cgi/trace', { cache: 'no-store' });
+      const text = await response.text();
+      const match = text.match(/ts=([0-9.]+)/);
+      if (match && match[1]) {
+        const timestamp = parseFloat(match[1]) * 1000;
+        return new Date(timestamp);
+      }
+      throw new Error('Gagal mendapatkan waktu dari alternatif');
+    }
+
+    async function checkTimeSync() {
+      try {
+        if (reloadTimeBtn && !reloadTimeBtn.disabled) {
+          reloadTimeBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengecek...';
+          reloadTimeBtn.disabled = true;
+        }
+        
+        let serverTime;
+        try {
+          serverTime = await getAccurateServerTime();
+        } catch (err) {
+          console.warn('Primary API gagal, coba alternatif', err);
+          serverTime = await fetchServerTimeAlternative();
+        }
+        
+        const localTime = new Date();
+        const diffMs = Math.abs(serverTime.getTime() - localTime.getTime());
+        const diffSec = diffMs / 1000;
+        
+        if (diffMs > TIME_TOLERANCE_MS) {
+          showTimeError(serverTime, localTime, diffSec);
+        } else {
+          if (isTimeErrorActive) {
+            hideTimeError();
+            const toastEl = document.getElementById("toast");
+            toastEl.textContent = "✓ Waktu sudah sinkron (selisih ≤ 1 menit). Silakan login.";
+            toastEl.className = "show";
+            setTimeout(() => { 
+              if(toastEl.textContent === "✓ Waktu sudah sinkron (selisih ≤ 1 menit). Silakan login.") 
+                toastEl.className = toastEl.className.replace("show", ""); 
+            }, 3000);
+          } else {
+            if (timeAlertContainer.style.display !== 'none') timeAlertContainer.style.display = 'none';
+            setLoginFormEnabled(true);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        isTimeErrorActive = true;
+        timeAlertContainer.style.display = 'block';
+        timeDetailsEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> Gagal memverifikasi waktu server.<br>
+                                   ${err.message}<br>Periksa koneksi internet dan klik Reload.`;
+        setLoginFormEnabled(false);
+      } finally {
+        if (reloadTimeBtn) {
+          reloadTimeBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Reload & Cek Ulang Waktu';
+          reloadTimeBtn.disabled = false;
+        }
+      }
+    }
+
+    reloadTimeBtn.addEventListener('click', async (e) => {
       e.preventDefault();
+      await checkTimeSync();
+    });
+
+    function startPeriodicTimeCheck() {
+      if (timeCheckInterval) clearInterval(timeCheckInterval);
+      checkTimeSync();
+      timeCheckInterval = setInterval(() => {
+        checkTimeSync();
+      }, 60000); // cek setiap 1 menit
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (timeCheckInterval) clearInterval(timeCheckInterval);
+    });
+
+    // ---------- LOGIN & RESET PASSWORD (dengan proteksi jika error waktu) ----------
+    const originalSubmitHandler = async (e) => {
+      e.preventDefault();
+      if (isTimeErrorActive) {
+        messageEl.textContent = '⚠️ Gagal Login: Waktu perangkat berbeda lebih dari 1 menit dari server. Kembalikan jam dan klik Reload.';
+        messageEl.classList.add('error');
+        return;
+      }
+      
       messageEl.textContent = '';
       messageEl.className = '';
       loginBtn.disabled = true;
@@ -548,25 +751,18 @@
         loadingSpinner.style.display = 'none';
         loginText.textContent = 'Login';
       }
-    });
-
-    forgotPasswordLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      forgotPasswordModal.style.display = 'flex';
-      resetUsernameInput.focus();
-    });
-
-    closeButton.addEventListener('click', () => {
-      forgotPasswordModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', (event) => {
-      if (event.target == forgotPasswordModal) {
-        forgotPasswordModal.style.display = 'none';
+    };
+    
+    loginForm.removeEventListener('submit', loginForm._listener);
+    loginForm.addEventListener('submit', originalSubmitHandler);
+    loginForm._listener = originalSubmitHandler;
+    
+    const originalResetHandler = async () => {
+      if (isTimeErrorActive) {
+        resetMessageEl.textContent = '❌ Tidak dapat reset sandi karena waktu perangkat berbeda lebih dari 1 menit dari server.';
+        resetMessageEl.classList.add('error');
+        return;
       }
-    });
-
-    resetPasswordBtn.addEventListener('click', async () => {
       resetMessageEl.textContent = '';
       resetMessageEl.className = '';
       const username = resetUsernameInput.value.trim();
@@ -605,6 +801,38 @@
         resetLoadingSpinner.style.display = 'none';
         resetBtnText.textContent = 'Reset Sandi';
       }
+    };
+    
+    resetPasswordBtn.removeEventListener('click', resetPasswordBtn._listener);
+    resetPasswordBtn.addEventListener('click', originalResetHandler);
+    resetPasswordBtn._listener = originalResetHandler;
+    
+    forgotPasswordLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isTimeErrorActive) {
+        messageEl.textContent = '⏰ Tidak dapat mengakses fitur reset karena waktu tidak sinkron (selisih > 1 menit)!';
+        messageEl.classList.add('error');
+        setTimeout(() => messageEl.classList.remove('error'), 3000);
+        return;
+      }
+      forgotPasswordModal.style.display = 'flex';
+      resetUsernameInput.focus();
+    });
+    
+    closeButton.addEventListener('click', () => {
+      forgotPasswordModal.style.display = 'none';
+    });
+    
+    window.addEventListener('click', (event) => {
+      if (event.target == forgotPasswordModal) {
+        forgotPasswordModal.style.display = 'none';
+      }
+    });
+
+    window.addEventListener('load', () => {
+      usernameInput.focus();
+      localStorage.removeItem('sessionId');
+      startPeriodicTimeCheck();
     });
   </script>
 </body>
